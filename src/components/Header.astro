@@ -20,20 +20,6 @@ const navItems = [
     <img src="/img/logotip-simple-CalPortal.svg" alt="Cal Portal" />
   </a>
 
-  <nav class="main-nav">
-    {navItems.map((item) => (
-      <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
-    ))}
-    <a href={`/${lang}/reserves/`} class="btn">{t.nav.book}</a>
-    <div class="lang-switch">
-      {Object.keys(languages).map((code) => (
-        <a href={getLocalizedPath(path, code as keyof typeof languages)} aria-current={code === lang ? 'true' : undefined}>
-          {code}
-        </a>
-      ))}
-    </div>
-  </nav>
-
   <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
     <svg viewBox="0 0 40 40" fill="none">
       <line x1="4" y1="8" x2="36" y2="8" />
