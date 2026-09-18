@@ -76,10 +76,6 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
       </a>
     </div>
 
-    <div class="hero-cta">
-      <a class="btn btn-solid" href={`/${lang}/reserves/`}>{t.hero.ctaBook}</a>
-      <a class="btn" href={`/${lang}/habitacions/`}>{t.hero.ctaRooms}</a>
-    </div>
   </div>
 
   <picture class="hero-house">
@@ -105,15 +101,18 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
   // Floating panels (e.g. the language switcher) are taken out of the
   // normal document flow so opening them never pushes or re-centers the
   // hero title, and they have no background fill — they read as text
-  // and lines floating over the hero. Their position is computed from
-  // the trigger word's own on-screen box: they open right above it,
-  // like the original site. The hero has plenty of clear room for that
-  // on desktop, but on narrow screens the word sits right under the
-  // header with no clear space above or below it to show a fill-less
-  // panel without it blending into other text — so there we drop it
-  // into the open hero background under the whole title block instead.
+  // and lines floating over the hero. They always open right above
+  // their trigger word, like the original site: never overlapping the
+  // word itself, and clamped so they never run off the top of the
+  // screen on short viewports either.
   function positionFloatingPanel(trigger: HTMLElement, panel: HTMLElement) {
-    const parent = (panel.offsetParent as HTMLElement) || document.body;
+    // Not panel.offsetParent: the panel is still `display: none` at this
+    // point (is-open is added below), and offsetParent of a display:none
+    // element is null — which silently fell back to <body> here, throwing
+    // every coordinate off by however far .hero-inner sits from the page
+    // top. The panel's actual DOM parent (.hero-inner, position: relative)
+    // is the real positioning context regardless of its display state.
+    const parent = (panel.parentElement as HTMLElement) || document.body;
 
     // Measure the panel's natural size without it being visible/affecting layout.
     panel.style.visibility = 'hidden';
@@ -124,7 +123,7 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
 
     const parentRect = parent.getBoundingClientRect();
     const triggerRect = trigger.getBoundingClientRect();
-    const gap = 12;
+    const gap = 14;
 
     // Some panels mark, via --panel-anchor-offset, where their own
     // dividing line sits (e.g. the language list's vertical rule). When
@@ -134,33 +133,17 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
     const anchorOffsetRaw = getComputedStyle(anchorEl).getPropertyValue('--panel-anchor-offset');
     const anchorOffset = anchorOffsetRaw ? parseFloat(anchorOffsetRaw) : NaN;
 
-    // All of this is done in viewport coordinates first (so it can be
-    // compared against elements outside the hero, like the header),
-    // then converted to hero-relative coordinates at the end.
-    let leftAboveVp = Number.isFinite(anchorOffset)
+    // All of this is done in viewport coordinates first, then converted
+    // to hero-relative coordinates at the end.
+    let leftVp = Number.isFinite(anchorOffset)
       ? triggerRect.left - anchorOffset
       : triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
-    leftAboveVp = Math.max(8, Math.min(leftAboveVp, window.innerWidth - panelRect.width - 8));
+    leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
 
-    const aboveTopVp = triggerRect.top - panelRect.height - gap;
-
-    // The panel has no fill, so a little proximity to the header is
-    // harmless — what actually matters is whether it has room to exist
-    // above the word at all without running off the top of the screen.
-    const fitsAbove = aboveTopVp >= 8;
-
-    let leftVp: number;
-    let topVp: number;
-    if (fitsAbove) {
-      leftVp = leftAboveVp;
-      topVp = aboveTopVp;
-    } else {
-      const safeZone = document.querySelector('.hero-cta') || trigger;
-      const safeRect = safeZone.getBoundingClientRect();
-      topVp = safeRect.bottom + gap;
-      leftVp = parentRect.left + parentRect.width / 2 - panelRect.width / 2;
-      leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
-    }
+    // Always above the word, by at least `gap`. On an unusually short
+    // viewport this can push the top of the panel above the visible
+    // screen — better that than ever covering the word it belongs to.
+    const topVp = triggerRect.top - panelRect.height - gap;
 
     panel.style.left = `${leftVp - parentRect.left}px`;
     panel.style.top = `${topVp - parentRect.top}px`;
@@ -181,6 +164,16 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
         openFloatHandlers = { reposition };
         window.addEventListener('resize', reposition);
         window.addEventListener('scroll', reposition, true);
+
+        // The custom serif font can still be swapping in for the fallback
+        // when this first position is computed (font-display: swap), which
+        // reflows the title afterwards and silently invalidates it. Redo it
+        // once the real font has actually finished loading.
+        if (document.fonts && document.fonts.status !== 'loaded') {
+          document.fonts.ready.then(() => {
+            if (panel.classList.contains('is-open')) reposition();
+          });
+        }
       }
       panel.classList.add('is-open');
     });
