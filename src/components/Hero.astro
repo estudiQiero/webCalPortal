@@ -104,11 +104,14 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
 
   // Floating panels (e.g. the language switcher) are taken out of the
   // normal document flow so opening them never pushes or re-centers the
-  // hero title. Their position is computed from the trigger word's own
-  // on-screen box: they open above it, like the original site. The hero
-  // itself has plenty of room for that, but on narrow screens the word
-  // sits right under the logo/hamburger, so we flip to open below
-  // whenever opening above would actually collide with those.
+  // hero title, and they have no background fill — they read as text
+  // and lines floating over the hero. Their position is computed from
+  // the trigger word's own on-screen box: they open right above it,
+  // like the original site. The hero has plenty of clear room for that
+  // on desktop, but on narrow screens the word sits right under the
+  // header with no clear space above or below it to show a fill-less
+  // panel without it blending into other text — so there we drop it
+  // into the open hero background under the whole title block instead.
   function positionFloatingPanel(trigger: HTMLElement, panel: HTMLElement) {
     const parent = (panel.offsetParent as HTMLElement) || document.body;
 
@@ -123,30 +126,41 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
     const triggerRect = trigger.getBoundingClientRect();
     const gap = 12;
 
+    // Some panels mark, via --panel-anchor-offset, where their own
+    // dividing line sits (e.g. the language list's vertical rule). When
+    // present, we line that mark up with the start of the trigger word
+    // instead of just centering the whole panel under it.
+    const anchorEl = panel.querySelector<HTMLElement>('.lang-list') || panel;
+    const anchorOffsetRaw = getComputedStyle(anchorEl).getPropertyValue('--panel-anchor-offset');
+    const anchorOffset = anchorOffsetRaw ? parseFloat(anchorOffsetRaw) : NaN;
+
     // All of this is done in viewport coordinates first (so it can be
-    // compared against the header's elements, which aren't inside the
-    // hero), then converted to hero-relative coordinates at the end.
-    let leftVp = triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
-    leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
+    // compared against elements outside the hero, like the header),
+    // then converted to hero-relative coordinates at the end.
+    let leftAboveVp = Number.isFinite(anchorOffset)
+      ? triggerRect.left - anchorOffset
+      : triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
+    leftAboveVp = Math.max(8, Math.min(leftAboveVp, window.innerWidth - panelRect.width - 8));
 
     const aboveTopVp = triggerRect.top - panelRect.height - gap;
-    const belowTopVp = triggerRect.bottom + gap;
-    const aboveRect = {
-      left: leftVp,
-      right: leftVp + panelRect.width,
-      top: aboveTopVp,
-      bottom: aboveTopVp + panelRect.height,
-    };
 
-    let collides = aboveTopVp < 4;
-    document.querySelectorAll('.site-header .logo, .site-header .nav-toggle').forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (aboveRect.right >= r.left && aboveRect.left <= r.right && aboveRect.bottom >= r.top && aboveRect.top <= r.bottom) {
-        collides = true;
-      }
-    });
+    // The panel has no fill, so a little proximity to the header is
+    // harmless — what actually matters is whether it has room to exist
+    // above the word at all without running off the top of the screen.
+    const fitsAbove = aboveTopVp >= 8;
 
-    const topVp = collides ? belowTopVp : aboveTopVp;
+    let leftVp: number;
+    let topVp: number;
+    if (fitsAbove) {
+      leftVp = leftAboveVp;
+      topVp = aboveTopVp;
+    } else {
+      const safeZone = document.querySelector('.hero-cta') || trigger;
+      const safeRect = safeZone.getBoundingClientRect();
+      topVp = safeRect.bottom + gap;
+      leftVp = parentRect.left + parentRect.width / 2 - panelRect.width / 2;
+      leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
+    }
 
     panel.style.left = `${leftVp - parentRect.left}px`;
     panel.style.top = `${topVp - parentRect.top}px`;
