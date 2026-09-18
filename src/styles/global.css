@@ -292,7 +292,11 @@ p {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top left;
-  min-height: 88vh;
+  /* min-height alone would win over max-height on tall screens (that's
+     how the spec resolves the conflict), so the 900px cap is folded
+     into both instead of being a separate, losing max-height rule. */
+  min-height: min(88vh, 900px);
+  max-height: 900px;
   display: flex;
   align-items: center;
   /* Pull the hero up under the (transparent, floating) header so the
@@ -318,7 +322,9 @@ p {
   z-index: 5;
   width: 100%;
   text-align: center;
-  padding: calc(3rem + var(--header-h)) 1.5rem 34vh;
+  /* Capped (not just vh-based) so the whole block reliably fits inside
+     the hero's own 900px cap instead of growing past it on tall screens. */
+  padding: calc(3rem + var(--header-h)) 1.5rem min(34vh, 280px);
 }
 
 .hero h1 {
@@ -347,12 +353,17 @@ p {
 
 .hero-house {
   position: absolute;
-  left: 50%;
-  bottom: -2%;
-  transform: translateX(-50%);
+  left: 0;
+  bottom: 0;
   width: min(1400px, 160vw);
   z-index: 1;
   pointer-events: none;
+}
+
+.hero-house img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .hero-trees {
@@ -363,6 +374,17 @@ p {
   z-index: 2;
   pointer-events: none;
   display: none;
+}
+
+.hero-trees img {
+  /* The wrapper's height is what actually anchors this to the hero's
+     bottom edge — the image must be scaled to match it exactly, or it
+     renders at its own intrinsic size and its real bottom edge (the
+     grass/roots) ends up overflowing past bottom:0 and getting clipped,
+     showing the wrong part of the artwork instead of the bottom of it. */
+  display: block;
+  height: 100%;
+  width: auto;
 }
 
 @media (min-width: 700px) {
