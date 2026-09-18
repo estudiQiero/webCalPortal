@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const placeholderImgs = ['/img/fons-web-2500W.webp', '/img/paisatgeFons-3760x2260.webp', '/img/arbresFrontals.webp'];
+---
+
+<BaseLayout title={`${t.rooms.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title reveal">{t.rooms.title}</h1>
+      <p class="section-intro reveal">{t.rooms.intro}</p>
+
+      <div class="grid grid-3">
+        {t.rooms.list.map((room, i) => (
+          <div class="card reveal">
+            <img src={placeholderImgs[i]} alt={room.name} style="border-radius:10px; margin-bottom:1rem; height:180px; object-fit:cover; width:100%;" />
+            <span class="capacity">{room.capacity}</span>
+            <h3>{room.name}</h3>
+            <p>{room.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style="text-align:center; margin-top:2.5rem;">
+        <a class="btn btn-solid" href={`/${lang}/reserves/`}>{t.hero.ctaBook}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

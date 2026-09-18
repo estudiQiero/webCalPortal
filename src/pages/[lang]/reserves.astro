@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AvailabilityCalendar from '../../components/AvailabilityCalendar.astro';
+import BookingForm from '../../components/BookingForm.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={`${t.booking.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title reveal">{t.booking.title}</h1>
+      <p class="section-intro reveal">{t.booking.intro}</p>
+
+      <div class="booking-layout reveal">
+        <AvailabilityCalendar />
+        <BookingForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

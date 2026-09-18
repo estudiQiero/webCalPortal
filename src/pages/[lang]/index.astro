@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import WeatherWidget from '../../components/WeatherWidget.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout>
+  <Hero />
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title reveal">{t.weather.title}</h2>
+      <div class="reveal">
+        <WeatherWidget />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <h2 class="section-title reveal">{t.rooms.title}</h2>
+      <p class="section-intro reveal">{t.rooms.intro}</p>
+      <div class="grid grid-3">
+        {t.rooms.list.map((room) => (
+          <div class="card reveal">
+            <span class="capacity">{room.capacity}</span>
+            <h3>{room.name}</h3>
+            <p>{room.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div style="text-align:center; margin-top:2rem;">
+        <a class="btn" href={`/${lang}/habitacions/`}>{t.hero.ctaRooms}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title reveal">{t.activities.title}</h2>
+      <p class="section-intro reveal">{t.activities.intro}</p>
+      <div class="grid grid-2">
+        {t.activities.list.slice(0, 4).map((a) => (
+          <div class="card reveal">
+            <h3>{a.name}</h3>
+            <p>{a.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container" style="text-align:center;">
+      <h2 class="section-title reveal">{t.booking.title}</h2>
+      <p class="section-intro reveal">{t.booking.intro}</p>
+      <a class="btn btn-solid reveal" href={`/${lang}/reserves/`}>{t.hero.ctaBook}</a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContactForm from '../../components/ContactForm.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={`${t.contact.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container" style="max-width: 640px;">
+      <h1 class="section-title reveal">{t.contact.title}</h1>
+      <p class="section-intro reveal">{t.contact.intro}</p>
+      <div class="reveal">
+        <ContactForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

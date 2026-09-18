@@ -1,0 +1,26 @@
+---
+// Root entry point: redirects to the visitor's language when we support it,
+// falling back to Catalan. Kept as a real page (not a Netlify-level redirect)
+// so it can pick the language client-side.
+---
+
+<!DOCTYPE html>
+<html lang="ca">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/ca/" />
+    <title>Cal Portal</title>
+  </head>
+  <body>
+    <p>
+      <a href="/ca/">Català</a> · <a href="/es/">Castellano</a> · <a href="/fr/">Français</a> ·
+      <a href="/en/">English</a>
+    </p>
+    <script>
+      const supported = ['ca', 'es', 'fr', 'en'];
+      const browserLang = (navigator.language || 'ca').slice(0, 2);
+      const target = supported.includes(browserLang) ? browserLang : 'ca';
+      window.location.replace(`/${target}/`);
+    </script>
+  </body>
+</html>

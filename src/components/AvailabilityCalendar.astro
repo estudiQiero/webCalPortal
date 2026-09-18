@@ -1,0 +1,115 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div class="availability-calendar" data-lang={lang}>
+  <div class="cal-legend">
+    <span><i class="cal-swatch free"></i>{t.booking.legendFree}</span>
+    <span><i class="cal-swatch busy"></i>{t.booking.legendBusy}</span>
+  </div>
+
+  <label for="room-filter" style="margin-bottom:1rem;">
+    {t.booking.room}
+    <select id="room-filter">
+      <option value="all">{t.booking.anyRoom}</option>
+      <option value="portal">{t.rooms.list[0].name}</option>
+      <option value="era">{t.rooms.list[1].name}</option>
+      <option value="celler">{t.rooms.list[2].name}</option>
+    </select>
+  </label>
+
+  <p id="cal-status">{t.booking.loading}</p>
+  <div id="cal-months"></div>
+</div>
+
+<script define:vars={{ lang, monthNames: {
+  ca: ['Gener','Febrer','Març','Abril','Maig','Juny','Juliol','Agost','Setembre','Octubre','Novembre','Desembre'],
+  es: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+  fr: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+}, dowNames: {
+  ca: ['dl','dt','dc','dj','dv','ds','dg'],
+  es: ['lu','ma','mi','ju','vi','sa','do'],
+  fr: ['lu','ma','me','je','ve','sa','di'],
+  en: ['Mo','Tu','We','Th','Fr','Sa','Su'],
+}, errorMsg: t.booking.error }}>
+  let busyRanges = [];
+
+  function isBusy(dateStr, room) {
+    return busyRanges.some((b) => {
+      if (room !== 'all' && b.room !== 'general' && b.room !== room) return false;
+      return dateStr >= b.start && dateStr < b.end;
+    });
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function renderMonths(room) {
+    const container = document.getElementById('cal-months');
+    container.innerHTML = '';
+    const today = new Date();
+
+    for (let m = 0; m < 3; m++) {
+      const monthDate = new Date(today.getFullYear(), today.getMonth() + m, 1);
+      const year = monthDate.getFullYear();
+      const month = monthDate.getMonth();
+      const firstDow = (monthDate.getDay() + 6) % 7; // Monday = 0
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const wrap = document.createElement('div');
+      wrap.className = 'cal-month';
+      const title = document.createElement('h4');
+      title.textContent = `${monthNames[lang][month]} ${year}`;
+      wrap.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'cal-grid';
+      dowNames[lang].forEach((d) => {
+        const el = document.createElement('div');
+        el.className = 'cal-dow';
+        el.textContent = d;
+        grid.appendChild(el);
+      });
+
+      for (let i = 0; i < firstDow; i++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day empty';
+        grid.appendChild(el);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${pad(month + 1)}-${pad(day)}`;
+        const el = document.createElement('div');
+        const busy = isBusy(dateStr, room);
+        el.className = `cal-day${busy ? ' busy' : ''}`;
+        el.textContent = String(day);
+        grid.appendChild(el);
+      }
+
+      wrap.appendChild(grid);
+      container.appendChild(wrap);
+    }
+  }
+
+  async function init() {
+    const status = document.getElementById('cal-status');
+    const select = document.getElementById('room-filter');
+    try {
+      const res = await fetch('/api/availability');
+      const data = await res.json();
+      busyRanges = data.busy || [];
+      status.textContent = data.configured
+        ? ''
+        : 'Calendario en modo demostración: aún no se han conectado los iCal de Airbnb/Booking.';
+      renderMonths(select.value);
+    } catch (err) {
+      status.textContent = errorMsg;
+    }
+    select.addEventListener('change', () => renderMonths(select.value));
+  }
+
+  init();
+</script>

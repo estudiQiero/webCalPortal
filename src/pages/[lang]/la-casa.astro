@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WeatherWidget from '../../components/WeatherWidget.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={`${t.house.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container" style="max-width: 900px;">
+      <h1 class="section-title reveal">{t.house.title}</h1>
+      <img class="reveal" src="/img/casaBase.svg" alt="Cal Portal" style="max-width: 480px; margin: 0 auto 2rem;" />
+      <p class="reveal" style="font-size:1.15rem; text-align:center;">{t.house.body}</p>
+
+      <div class="grid grid-2 reveal" style="margin-top:3rem;">
+        <div class="card">
+          <div class="owners-row" style="justify-content:center;">
+            <figure>
+              <img src="/img/calportalJoss.svg" alt={t.aboutModal.names[0]} style="height:90px; margin: 0 auto;" />
+              <figcaption>{t.aboutModal.names[0]}</figcaption>
+            </figure>
+            <figure>
+              <img src="/img/calportalMiq.svg" alt={t.aboutModal.names[1]} style="height:90px; margin: 0 auto;" />
+              <figcaption>{t.aboutModal.names[1]}</figcaption>
+            </figure>
+          </div>
+          <p style="margin-top:1rem;">{t.aboutModal.text}</p>
+        </div>
+        <div class="card" style="display:flex; align-items:center; justify-content:center;">
+          <WeatherWidget />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

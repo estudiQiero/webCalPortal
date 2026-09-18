@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Placeholder gallery using the current site's images — swap these for real
+// interior/exterior photos of the house and rooms when available.
+const images = [
+  '/img/paisatgeFons-3760x2260.webp',
+  '/img/arbresFrontals.webp',
+  '/img/fons-web-2500W.webp',
+  '/img/casaBase.svg',
+  '/img/fons-web-1600W.webp',
+];
+---
+
+<BaseLayout title={`${t.gallery.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title reveal">{t.gallery.title}</h1>
+      <div class="gallery-grid reveal">
+        {images.map((src) => (
+          <a href={src} target="_blank" rel="noopener">
+            <img src={src} loading="lazy" alt="Cal Portal" />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

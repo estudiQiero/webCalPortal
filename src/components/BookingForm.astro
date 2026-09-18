@@ -1,0 +1,94 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<form
+  class="card"
+  name="booking-request"
+  method="POST"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  id="booking-form"
+>
+  <h3>{t.booking.formTitle}</h3>
+  <input type="hidden" name="form-name" value="booking-request" />
+  <input type="hidden" name="lang" value={lang} />
+  <p class="hidden" style="display:none;">
+    <label>Don't fill this out: <input name="bot-field" /></label>
+  </p>
+
+  <label>
+    {t.contact.name}
+    <input type="text" name="name" required />
+  </label>
+  <label>
+    {t.contact.email}
+    <input type="email" name="email" required />
+  </label>
+  <label>
+    {t.contact.phone}
+    <input type="tel" name="phone" />
+  </label>
+  <label>
+    {t.booking.room}
+    <select name="room">
+      <option value="any">{t.booking.anyRoom}</option>
+      <option value="portal">{t.rooms.list[0].name}</option>
+      <option value="era">{t.rooms.list[1].name}</option>
+      <option value="celler">{t.rooms.list[2].name}</option>
+    </select>
+  </label>
+  <label>
+    {t.booking.checkin}
+    <input type="date" name="checkin" required />
+  </label>
+  <label>
+    {t.booking.checkout}
+    <input type="date" name="checkout" required />
+  </label>
+  <label>
+    {t.booking.guests}
+    <input type="number" name="guests" min="1" max="6" value="2" />
+  </label>
+  <label>
+    {t.contact.message}
+    <textarea name="message"></textarea>
+  </label>
+
+  <p class="form-note">{t.booking.note}</p>
+  <button type="submit" class="btn btn-solid">{t.booking.requestBtn}</button>
+  <p class="form-status" id="booking-status"></p>
+</form>
+
+<script define:vars={{ successMsg: t.booking.success }}>
+  const form = document.getElementById('booking-form');
+  const status = document.getElementById('booking-status');
+
+  function encode(data) {
+    return Object.keys(data)
+      .map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+      .join('&');
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encode(data),
+    })
+      .then(() => {
+        status.textContent = successMsg;
+        status.className = 'form-status ok';
+        form.reset();
+      })
+      .catch(() => {
+        status.textContent = 'Error';
+        status.className = 'form-status error';
+      });
+  });
+</script>

@@ -1,0 +1,65 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<section class="hero">
+  <div class="hero-trees"><img src="/img/arbresFrontals.webp" alt="" /></div>
+
+  <div class="hero-inner">
+    <h1 class="text-shadow">
+      {t.hero.welcome} {t.hero.toHouse} <em>{t.hero.houseWord}</em>
+    </h1>
+    <img class="logo-mark" src="/img/logotipo-cal-portal.svg" alt="Cal Portal" />
+    <p class="hero-sub text-shadow">{t.hero.subtitle}</p>
+
+    <div class="hero-chips">
+      <button class="hero-chip" data-panel="welcome">{t.welcomeModal.title}</button>
+      <button class="hero-chip" data-panel="about">{t.aboutModal.title}</button>
+    </div>
+
+    <div class="chip-panel" id="panel-welcome">
+      <h3>{t.welcomeModal.title}</h3>
+      <p>{t.welcomeModal.text}</p>
+    </div>
+
+    <div class="chip-panel" id="panel-about">
+      <h3>{t.aboutModal.title}</h3>
+      <p>{t.aboutModal.text}</p>
+      <div class="owners-row">
+        <figure>
+          <img src="/img/calportalJoss.svg" alt={t.aboutModal.names[0]} />
+          <figcaption>{t.aboutModal.names[0]}</figcaption>
+        </figure>
+        <figure>
+          <img src="/img/calportalMiq.svg" alt={t.aboutModal.names[1]} />
+          <figcaption>{t.aboutModal.names[1]}</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="hero-cta">
+      <a class="btn btn-solid" href={`/${lang}/reserves/`}>{t.hero.ctaBook}</a>
+      <a class="btn" href={`/${lang}/habitacions/`}>{t.hero.ctaRooms}</a>
+    </div>
+  </div>
+
+  <picture class="hero-house">
+    <source srcset="/img/contornA.svg" media="(max-width: 549px)" />
+    <img src="/img/casaBase.svg" alt="Cal Portal" />
+  </picture>
+</section>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.hero-chip');
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const panel = document.getElementById(`panel-${chip.dataset.panel}`);
+      const isOpen = panel?.classList.contains('is-open');
+      document.querySelectorAll('.chip-panel').forEach((p) => p.classList.remove('is-open'));
+      if (!isOpen) panel?.classList.add('is-open');
+    });
+  });
+</script>

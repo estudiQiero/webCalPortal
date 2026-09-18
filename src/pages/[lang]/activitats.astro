@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLangFromUrl, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return [{ params: { lang: 'ca' } }, { params: { lang: 'es' } }, { params: { lang: 'fr' } }, { params: { lang: 'en' } }];
+}
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<BaseLayout title={`${t.activities.title} — Cal Portal`}>
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title reveal">{t.activities.title}</h1>
+      <p class="section-intro reveal">{t.activities.intro}</p>
+      <div class="grid grid-2">
+        {t.activities.list.map((a) => (
+          <div class="card reveal">
+            <h3>{a.name}</h3>
+            <p>{a.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

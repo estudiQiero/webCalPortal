@@ -1,0 +1,68 @@
+---
+import { getLangFromUrl, useTranslations, getLocalizedPath, languages } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const path = Astro.url.pathname;
+
+const navItems = [
+  { href: `/${lang}/`, label: t.nav.home },
+  { href: `/${lang}/habitacions/`, label: t.nav.rooms },
+  { href: `/${lang}/la-casa/`, label: t.nav.house },
+  { href: `/${lang}/activitats/`, label: t.nav.activities },
+  { href: `/${lang}/galeria/`, label: t.nav.gallery },
+  { href: `/${lang}/contacte/`, label: t.nav.contact },
+];
+---
+
+<header class="site-header">
+  <a href={`/${lang}/`} class="logo">
+    <img src="/img/logotip-simple-CalPortal.svg" alt="Cal Portal" />
+  </a>
+
+  <nav class="main-nav">
+    {navItems.map((item) => (
+      <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>{item.label}</a>
+    ))}
+    <a href={`/${lang}/reserves/`} class="btn">{t.nav.book}</a>
+    <div class="lang-switch">
+      {Object.keys(languages).map((code) => (
+        <a href={getLocalizedPath(path, code as keyof typeof languages)} aria-current={code === lang ? 'true' : undefined}>
+          {code}
+        </a>
+      ))}
+    </div>
+  </nav>
+
+  <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+    <svg viewBox="0 0 40 40" fill="none">
+      <line x1="4" y1="8" x2="36" y2="8" />
+      <line x1="4" y1="20" x2="36" y2="20" />
+      <line x1="4" y1="32" x2="36" y2="32" />
+    </svg>
+  </button>
+</header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <button class="close-btn" id="nav-close" aria-label="Close">&times;</button>
+  {navItems.map((item) => (
+    <a href={item.href}>{item.label}</a>
+  ))}
+  <a href={`/${lang}/reserves/`} class="btn btn-solid">{t.nav.book}</a>
+  <div class="lang-switch">
+    {Object.keys(languages).map((code) => (
+      <a href={getLocalizedPath(path, code as keyof typeof languages)} aria-current={code === lang ? 'true' : undefined}>
+        {code}
+      </a>
+    ))}
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const close = document.getElementById('nav-close');
+  const menu = document.getElementById('mobile-nav');
+  toggle?.addEventListener('click', () => menu?.classList.add('is-open'));
+  close?.addEventListener('click', () => menu?.classList.remove('is-open'));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.classList.remove('is-open')));
+</script>

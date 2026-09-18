@@ -1,0 +1,69 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<div class="weather-widget" id="weather-widget" data-lang={lang} data-error={t.weather.error}>
+  <p class="icon" id="w-icon">🌤️</p>
+  <p class="temp" id="w-temp">—</p>
+  <p id="w-desc">{t.weather.loading}</p>
+  <div class="details">
+    <span>{t.weather.feelsLike}: <strong id="w-feels">—</strong></span>
+    <span>{t.weather.wind}: <strong id="w-wind">—</strong></span>
+    <span>{t.weather.humidity}: <strong id="w-humidity">—</strong></span>
+  </div>
+  <p class="updated" id="w-updated"></p>
+</div>
+
+<script>
+  const LAT = 41.7089;
+  const LON = 1.1522;
+
+  const WEATHER_CODES: Record<number, { icon: string; label: Record<string, string> }> = {
+    0: { icon: '☀️', label: { ca: 'Cel serè', es: 'Cielo despejado', fr: 'Ciel dégagé', en: 'Clear sky' } },
+    1: { icon: '🌤️', label: { ca: 'Poc ennuvolat', es: 'Poco nuboso', fr: 'Peu nuageux', en: 'Mostly clear' } },
+    2: { icon: '⛅', label: { ca: 'Parcialment ennuvolat', es: 'Parcialmente nublado', fr: 'Partiellement nuageux', en: 'Partly cloudy' } },
+    3: { icon: '☁️', label: { ca: 'Ennuvolat', es: 'Nublado', fr: 'Nuageux', en: 'Overcast' } },
+    45: { icon: '🌫️', label: { ca: 'Boira', es: 'Niebla', fr: 'Brouillard', en: 'Fog' } },
+    48: { icon: '🌫️', label: { ca: 'Boira gebrant', es: 'Niebla helada', fr: 'Brouillard givrant', en: 'Rime fog' } },
+    51: { icon: '🌦️', label: { ca: 'Plugim fluix', es: 'Llovizna ligera', fr: 'Bruine légère', en: 'Light drizzle' } },
+    61: { icon: '🌧️', label: { ca: 'Pluja fluixa', es: 'Lluvia débil', fr: 'Pluie faible', en: 'Light rain' } },
+    63: { icon: '🌧️', label: { ca: 'Pluja moderada', es: 'Lluvia moderada', fr: 'Pluie modérée', en: 'Moderate rain' } },
+    65: { icon: '🌧️', label: { ca: 'Pluja forta', es: 'Lluvia fuerte', fr: 'Pluie forte', en: 'Heavy rain' } },
+    71: { icon: '🌨️', label: { ca: 'Neu fluixa', es: 'Nieve débil', fr: 'Neige faible', en: 'Light snow' } },
+    80: { icon: '🌦️', label: { ca: 'Ruixats', es: 'Chubascos', fr: 'Averses', en: 'Rain showers' } },
+    95: { icon: '⛈️', label: { ca: 'Tempesta', es: 'Tormenta', fr: 'Orage', en: 'Thunderstorm' } },
+  };
+
+  async function loadWeather() {
+    const widget = document.getElementById('weather-widget');
+    const lang = widget?.dataset.lang ?? 'ca';
+    const descEl = document.getElementById('w-desc')!;
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=Europe%2FMadrid`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('bad response');
+      const data = await res.json();
+      const c = data.current;
+
+      document.getElementById('w-temp')!.textContent = `${Math.round(c.temperature_2m)}°C`;
+      document.getElementById('w-feels')!.textContent = `${Math.round(c.apparent_temperature)}°C`;
+      document.getElementById('w-wind')!.textContent = `${Math.round(c.wind_speed_10m)} km/h`;
+      document.getElementById('w-humidity')!.textContent = `${Math.round(c.relative_humidity_2m)}%`;
+
+      const info = WEATHER_CODES[c.weather_code] ?? WEATHER_CODES[2];
+      document.getElementById('w-icon')!.textContent = info.icon;
+      descEl.textContent = info.label[lang] ?? info.label.en;
+
+      const time = new Date(c.time);
+      document.getElementById('w-updated')!.textContent = `${time.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })}`;
+    } catch (err) {
+      descEl.textContent = widget?.dataset.error || 'No hem pogut consultar el temps.';
+    }
+  }
+
+  loadWeather();
+  setInterval(loadWeather, 15 * 60 * 1000);
+</script>

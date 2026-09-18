@@ -1,0 +1,19 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <nav>
+    <a href={`/${lang}/`}>{t.nav.home}</a>
+    <a href={`/${lang}/habitacions/`}>{t.nav.rooms}</a>
+    <a href={`/${lang}/activitats/`}>{t.nav.activities}</a>
+    <a href={`/${lang}/contacte/`}>{t.nav.contact}</a>
+    <a href={`/${lang}/reserves/`}>{t.nav.book}</a>
+  </nav>
+  <p>Cal Portal — {t.footer.address}</p>
+  <p>&copy; {year} Cal Portal. {t.footer.rights}</p>
+</footer>
