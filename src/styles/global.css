@@ -17,6 +17,7 @@
   --coure-soft: #7a4a2c;
   --verd-camp: #6b7a4f;
   --font-principal: 'Arno', Georgia, 'Times New Roman', serif;
+  --header-h: 82px;
   --max-width: 1180px;
   --radius: 14px;
   --shadow-card: 0 10px 30px -12px rgba(79, 42, 21, 0.35);
@@ -110,7 +111,8 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  min-height: var(--header-h);
+  padding: 0 1.5rem;
   background: transparent;
   pointer-events: none;
 }
@@ -243,6 +245,11 @@ p {
   min-height: 88vh;
   display: flex;
   align-items: center;
+  /* Pull the hero up under the (transparent, floating) header so the
+     background image reaches the very top of the screen instead of
+     leaving a gap the size of the header showing the plain page
+     background. */
+  margin-top: calc(-1 * var(--header-h));
 }
 
 @media (min-width: 900px) {
@@ -257,7 +264,7 @@ p {
   z-index: 5;
   width: 100%;
   text-align: center;
-  padding: 3rem 1.5rem 34vh;
+  padding: calc(3rem + var(--header-h)) 1.5rem 34vh;
 }
 
 .hero h1 {
