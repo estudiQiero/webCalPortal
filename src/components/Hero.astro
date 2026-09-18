@@ -1,28 +1,33 @@
 ---
-import { getLangFromUrl, useTranslations } from '../i18n';
+import { getLangFromUrl, useTranslations, getLocalizedPath, languages } from '../i18n';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+const path = Astro.url.pathname;
 ---
 
 <section class="hero">
   <div class="hero-trees"><img src="/img/arbresFrontals.webp" alt="" /></div>
 
   <div class="hero-inner">
-    <h1 class="text-shadow">
-      {t.hero.welcome} {t.hero.toHouse} <em>{t.hero.houseWord}</em>
-    </h1>
+    <h1 class="text-shadow" set:html={t.hero.titleHtml} />
     <img class="logo-mark" src="/img/logotipo-cal-portal.svg" alt="Cal Portal" />
-    <p class="hero-sub text-shadow">{t.hero.subtitle}</p>
+    <p class="hero-sub text-shadow" set:html={t.hero.subtitleHtml} />
 
-    <div class="hero-chips">
-      <button class="hero-chip" data-panel="welcome">{t.welcomeModal.title}</button>
-      <button class="hero-chip" data-panel="about">{t.aboutModal.title}</button>
-    </div>
-
-    <div class="chip-panel" id="panel-welcome">
-      <h3>{t.welcomeModal.title}</h3>
-      <p>{t.welcomeModal.text}</p>
+    <div class="chip-panel" id="panel-lang">
+      <h3>{t.hero.langPanelTitle}</h3>
+      <ul class="lang-list">
+        {Object.entries(languages).map(([code, label]) => (
+          <li>
+            <a
+              href={getLocalizedPath(path, code as keyof typeof languages)}
+              aria-current={code === lang ? 'true' : undefined}
+            >
+              <span class="lang-code">{code}</span>{label}
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
 
     <div class="chip-panel" id="panel-about">
@@ -40,6 +45,21 @@ const t = useTranslations(lang);
       </div>
     </div>
 
+    <div class="chip-panel" id="panel-location">
+      <h3>{t.location.title}</h3>
+      <p>{t.location.text}</p>
+      <div class="location-map">
+        <iframe
+          title="Cal Portal — Torrefeta i Florejacs"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=1.1372%2C41.6989%2C1.1672%2C41.7189&layer=mapnik&marker=41.7089%2C1.1522"
+          loading="lazy"
+        ></iframe>
+      </div>
+      <a class="location-link" href="https://www.google.com/maps?q=41.7089,1.1522" target="_blank" rel="noopener">
+        {t.location.openInMaps} →
+      </a>
+    </div>
+
     <div class="hero-cta">
       <a class="btn btn-solid" href={`/${lang}/reserves/`}>{t.hero.ctaBook}</a>
       <a class="btn" href={`/${lang}/habitacions/`}>{t.hero.ctaRooms}</a>
@@ -53,13 +73,32 @@ const t = useTranslations(lang);
 </section>
 
 <script>
-  const chips = document.querySelectorAll<HTMLButtonElement>('.hero-chip');
-  chips.forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const panel = document.getElementById(`panel-${chip.dataset.panel}`);
+  const triggers = document.querySelectorAll<HTMLElement>('.word-trigger');
+  const panels = document.querySelectorAll<HTMLElement>('.chip-panel');
+
+  function closeAllPanels() {
+    panels.forEach((p) => p.classList.remove('is-open'));
+  }
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const panel = document.getElementById(`panel-${trigger.dataset.panel}`);
       const isOpen = panel?.classList.contains('is-open');
-      document.querySelectorAll('.chip-panel').forEach((p) => p.classList.remove('is-open'));
+      closeAllPanels();
       if (!isOpen) panel?.classList.add('is-open');
     });
+  });
+
+  // Clicking anywhere outside an open panel (and outside the word that
+  // triggered it) closes whatever is open.
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('.chip-panel') || target.closest('.word-trigger')) return;
+    closeAllPanels();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllPanels();
   });
 </script>

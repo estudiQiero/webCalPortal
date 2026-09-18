@@ -71,6 +71,46 @@ p {
     3px 0 2px var(--crema), 0 -3px 2px var(--crema);
 }
 
+/* Arno's stylistic-alternate swashes, used on a handful of hand-picked
+   letters in the hero title (ported from the original site). */
+.glyph1,
+.glyph2 {
+  font-feature-settings: 'salt';
+}
+
+.glyph3 {
+  font-feature-settings: 'aalt';
+}
+
+.glyph4 {
+  font-feature-settings: 'onum';
+}
+
+/* Interactive words inside the hero title/subtitle that open a panel.
+   Note: no transform/scale here on purpose — these words sit tightly
+   between other inline text, and scaling an inline-block visually
+   overlaps the neighbouring words without a hover/focus underline. */
+.word-trigger {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--coure-hover);
+  text-underline-offset: 0.12em;
+  transition: color 0.2s ease-out, text-decoration-color 0.2s ease-out;
+}
+
+.word-trigger:hover,
+.word-trigger:focus-visible {
+  color: var(--coure-soft);
+  text-decoration-color: var(--coure-soft);
+}
+
+.word-trigger:focus-visible {
+  outline: 2px solid var(--coure-soft);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* ---------- buttons ---------- */
 .btn {
   display: inline-flex;
@@ -317,32 +357,8 @@ p {
   }
 }
 
-/* interactive welcome / about chips inside hero */
-.hero-chips {
-  display: flex;
-  gap: 1.5rem;
-  justify-content: center;
-  margin: 1.25rem 0;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 6;
-}
-
-.hero-chip {
-  cursor: pointer;
-  border: 1px solid var(--coure-hover);
-  background: rgba(247, 240, 220, 0.65);
-  border-radius: 999px;
-  padding: 0.5em 1.2em;
-  font-size: 1rem;
-  transition: transform var(--transition), background var(--transition);
-}
-
-.hero-chip:hover {
-  background: rgba(247, 240, 220, 0.95);
-  transform: translateY(-2px);
-}
-
+/* Panels opened by clicking a word inside the hero title/subtitle
+   (.word-trigger) — language switcher, "qui som" and location. */
 .chip-panel {
   display: none;
   max-width: 30em;
@@ -381,6 +397,65 @@ p {
 .owners-row img {
   height: 70px;
   margin: 0 auto;
+}
+
+/* Language panel (opens on the word "Benvinguts"/equivalent) */
+.lang-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lang-list li + li {
+  border-top: 1px solid var(--coure-hover);
+}
+
+.lang-list a {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em 0.25em;
+  transition: background var(--transition);
+}
+
+.lang-list a:hover {
+  background: var(--coure-hover);
+}
+
+.lang-list a[aria-current='true'] {
+  font-weight: bold;
+}
+
+.lang-code {
+  width: 2.5em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--coure-soft);
+}
+
+/* Location panel (opens on "Torrefeta") */
+.location-map {
+  margin-top: 0.75rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--coure-hover);
+}
+
+.location-map iframe {
+  width: 100%;
+  height: 200px;
+  border: 0;
+  display: block;
+}
+
+.location-link {
+  display: inline-block;
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .owners-row figcaption {

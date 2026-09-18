@@ -16,9 +16,13 @@ export default {
     welcome: 'Benvinguts',
     toHouse: 'a la nostra',
     houseWord: 'casa de poble',
+    titleHtml:
+      '<span class="word-trigger" data-panel="lang">Ben<span class="glyph3">v</span>inguts</span> a la <span class="word-trigger" data-panel="about"><span class="glyph3">n</span>ostra</span> <em>cas<span class="glyph2">a</span> de p<span class="glyph3">o</span>bl<span class="glyph2">e</span></em>',
     subtitle: 'Vine a gaudir de la natura a Torrefeta, Lleida',
+    subtitleHtml: 'Vine a gaudir de la natura a <span class="word-trigger" data-panel="location">Torrefeta</span>, Lleida',
     ctaBook: 'Consulta disponibilitat',
     ctaRooms: 'Veure habitacions',
+    langPanelTitle: 'Tria l’idioma',
   },
   welcomeModal: {
     title: 'Benvinguts',
@@ -28,6 +32,11 @@ export default {
     title: 'Qui som',
     names: ['Josefina', 'Miquel'],
     text: 'Som Josefina i Miquel. Obrim les portes de casa nostra perquè hi trobis el mateix que hi trobem nosaltres: temps a poc a poc i un poble de veritat.',
+  },
+  location: {
+    title: 'On som',
+    text: 'Torrefeta i Florejacs, al cor de la Segarra, Lleida — camps oberts i el castell de Florejacs a pocs minuts a peu.',
+    openInMaps: 'Obrir a Google Maps',
   },
   weather: {
     title: 'El temps a Torrefeta ara mateix',

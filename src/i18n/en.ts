@@ -18,9 +18,13 @@ const en: typeof ca = {
     welcome: 'Welcome',
     toHouse: 'to our',
     houseWord: 'village house',
+    titleHtml:
+      '<span class="word-trigger" data-panel="lang">Welcome</span> to <span class="word-trigger" data-panel="about">our</span> <em><span class="glyph3">v</span>illage hous<span class="glyph2">e</span></em>',
     subtitle: 'Come enjoy nature in Torrefeta, Lleida',
+    subtitleHtml: 'Come enjoy nature in <span class="word-trigger" data-panel="location">Torrefeta</span>, Lleida',
     ctaBook: 'Check availability',
     ctaRooms: 'See rooms',
+    langPanelTitle: 'Choose language',
   },
   welcomeModal: {
     title: 'Welcome',
@@ -30,6 +34,11 @@ const en: typeof ca = {
     title: 'Who we are',
     names: ['Josefina', 'Miquel'],
     text: 'We are Josefina and Miquel. We open the doors of our home so you can find what we find here ourselves: slower time and a real village.',
+  },
+  location: {
+    title: 'Where we are',
+    text: 'Torrefeta i Florejacs, in the heart of La Segarra, Lleida — open fields and Florejacs Castle a few minutes’ walk away.',
+    openInMaps: 'Open in Google Maps',
   },
   weather: {
     title: 'Weather in Torrefeta right now',
