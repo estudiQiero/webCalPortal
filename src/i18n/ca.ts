@@ -17,7 +17,7 @@ export default {
     toHouse: 'a la nostra',
     houseWord: 'casa de poble',
     titleHtml:
-      '<span class="word-trigger" data-panel="lang">Ben<span class="glyph3">v</span>inguts</span> a la <span class="word-trigger" data-panel="about"><span class="glyph3">n</span>ostra</span> <em>cas<span class="glyph2">a</span> de p<span class="glyph3">o</span>bl<span class="glyph2">e</span></em>',
+      '<span class="word-trigger" data-panel="lang">Ben<span class="glyph3">v</span>inguts</span> a la <span class="word-trigger" data-panel="about"><span class="glyph3">n</span>ostra</span> cas<span class="glyph2">a</span> de p<span class="glyph3">o</span>bl<span class="glyph2">e</span>',
     subtitle: 'Vine a gaudir de la natura a Torrefeta, Lleida',
     subtitleHtml: 'Vine a gaudir de la natura a <span class="word-trigger" data-panel="location">Torrefeta</span>, Lleida',
     ctaBook: 'Consulta disponibilitat',

@@ -19,7 +19,7 @@ const es: typeof ca = {
     toHouse: 'a nuestra',
     houseWord: 'casa de pueblo',
     titleHtml:
-      '<span class="word-trigger" data-panel="lang">Bien<span class="glyph3">v</span>enidos</span> a <span class="word-trigger" data-panel="about"><span class="glyph3">n</span>uestra</span> <em>cas<span class="glyph2">a</span> de puebl<span class="glyph3">o</span></em>',
+      '<span class="word-trigger" data-panel="lang">Bien<span class="glyph3">v</span>enidos</span> a <span class="word-trigger" data-panel="about"><span class="glyph3">n</span>uestra</span> cas<span class="glyph2">a</span> de puebl<span class="glyph3">o</span>',
     subtitle: 'Ven a disfrutar de la naturaleza en Torrefeta, Lleida',
     subtitleHtml: 'Ven a disfrutar de la naturaleza en <span class="word-trigger" data-panel="location">Torrefeta</span>, Lleida',
     ctaBook: 'Consultar disponibilidad',

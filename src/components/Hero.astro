@@ -1,9 +1,24 @@
 ---
 import { getLangFromUrl, useTranslations, getLocalizedPath, languages } from '../i18n';
+import ca from '../i18n/ca';
+import es from '../i18n/es';
+import fr from '../i18n/fr';
+import en from '../i18n/en';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 const path = Astro.url.pathname;
+
+// Each language's own word for "welcome", shown next to its code in the
+// language-switcher dropdown (matches the old site: CAT · Benvinguts,
+// ESP · Bienvenidos, etc.) regardless of the page's current language.
+const greetings: Record<string, string> = {
+  ca: ca.hero.welcome,
+  es: es.hero.welcome,
+  fr: fr.hero.welcome,
+  en: en.hero.welcome,
+};
+const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en: 'ENG' };
 ---
 
 <section class="hero">
@@ -14,16 +29,17 @@ const path = Astro.url.pathname;
     <img class="logo-mark" src="/img/logotipo-cal-portal.svg" alt="Cal Portal" />
     <p class="hero-sub text-shadow" set:html={t.hero.subtitleHtml} />
 
-    <div class="chip-panel" id="panel-lang">
-      <h3>{t.hero.langPanelTitle}</h3>
+    <div class="chip-panel chip-panel--float" id="panel-lang">
+      <h3 class="visually-hidden">{t.hero.langPanelTitle}</h3>
       <ul class="lang-list">
-        {Object.entries(languages).map(([code, label]) => (
+        {Object.entries(languages).map(([code]) => (
           <li>
             <a
               href={getLocalizedPath(path, code as keyof typeof languages)}
               aria-current={code === lang ? 'true' : undefined}
             >
-              <span class="lang-code">{code}</span>{label}
+              <span class="lang-code">{langAbbrev[code]}</span>
+              <span class="lang-greeting">{greetings[code]}</span>
             </a>
           </li>
         ))}
@@ -75,18 +91,84 @@ const path = Astro.url.pathname;
 <script>
   const triggers = document.querySelectorAll<HTMLElement>('.word-trigger');
   const panels = document.querySelectorAll<HTMLElement>('.chip-panel');
+  let openFloatHandlers: { reposition: () => void } | null = null;
 
   function closeAllPanels() {
     panels.forEach((p) => p.classList.remove('is-open'));
+    if (openFloatHandlers) {
+      window.removeEventListener('resize', openFloatHandlers.reposition);
+      window.removeEventListener('scroll', openFloatHandlers.reposition, true);
+      openFloatHandlers = null;
+    }
+  }
+
+  // Floating panels (e.g. the language switcher) are taken out of the
+  // normal document flow so opening them never pushes or re-centers the
+  // hero title. Their position is computed from the trigger word's own
+  // on-screen box: they open above it, like the original site. The hero
+  // itself has plenty of room for that, but on narrow screens the word
+  // sits right under the logo/hamburger, so we flip to open below
+  // whenever opening above would actually collide with those.
+  function positionFloatingPanel(trigger: HTMLElement, panel: HTMLElement) {
+    const parent = (panel.offsetParent as HTMLElement) || document.body;
+
+    // Measure the panel's natural size without it being visible/affecting layout.
+    panel.style.visibility = 'hidden';
+    panel.classList.add('is-open');
+    const panelRect = panel.getBoundingClientRect();
+    panel.classList.remove('is-open');
+    panel.style.visibility = '';
+
+    const parentRect = parent.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    const gap = 12;
+
+    // All of this is done in viewport coordinates first (so it can be
+    // compared against the header's elements, which aren't inside the
+    // hero), then converted to hero-relative coordinates at the end.
+    let leftVp = triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
+    leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
+
+    const aboveTopVp = triggerRect.top - panelRect.height - gap;
+    const belowTopVp = triggerRect.bottom + gap;
+    const aboveRect = {
+      left: leftVp,
+      right: leftVp + panelRect.width,
+      top: aboveTopVp,
+      bottom: aboveTopVp + panelRect.height,
+    };
+
+    let collides = aboveTopVp < 4;
+    document.querySelectorAll('.site-header .logo, .site-header .nav-toggle').forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (aboveRect.right >= r.left && aboveRect.left <= r.right && aboveRect.bottom >= r.top && aboveRect.top <= r.bottom) {
+        collides = true;
+      }
+    });
+
+    const topVp = collides ? belowTopVp : aboveTopVp;
+
+    panel.style.left = `${leftVp - parentRect.left}px`;
+    panel.style.top = `${topVp - parentRect.top}px`;
   }
 
   triggers.forEach((trigger) => {
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById(`panel-${trigger.dataset.panel}`);
-      const isOpen = panel?.classList.contains('is-open');
+      if (!panel) return;
+      const isOpen = panel.classList.contains('is-open');
       closeAllPanels();
-      if (!isOpen) panel?.classList.add('is-open');
+      if (isOpen) return;
+
+      if (panel.classList.contains('chip-panel--float')) {
+        positionFloatingPanel(trigger, panel);
+        const reposition = () => positionFloatingPanel(trigger, panel);
+        openFloatHandlers = { reposition };
+        window.addEventListener('resize', reposition);
+        window.addEventListener('scroll', reposition, true);
+      }
+      panel.classList.add('is-open');
     });
   });
 

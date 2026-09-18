@@ -19,7 +19,7 @@ const en: typeof ca = {
     toHouse: 'to our',
     houseWord: 'village house',
     titleHtml:
-      '<span class="word-trigger" data-panel="lang">Welcome</span> to <span class="word-trigger" data-panel="about">our</span> <em><span class="glyph3">v</span>illage hous<span class="glyph2">e</span></em>',
+      '<span class="word-trigger" data-panel="lang">Welcome</span> to <span class="word-trigger" data-panel="about">our</span> <span class="glyph3">v</span>illage hous<span class="glyph2">e</span>',
     subtitle: 'Come enjoy nature in Torrefeta, Lleida',
     subtitleHtml: 'Come enjoy nature in <span class="word-trigger" data-panel="location">Torrefeta</span>, Lleida',
     ctaBook: 'Check availability',
