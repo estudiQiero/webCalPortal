@@ -46,16 +46,16 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
       </ul>
     </div>
 
-    <div class="chip-panel" id="panel-about">
-      <h3>{t.aboutModal.title}</h3>
-      <p>{t.aboutModal.text}</p>
-      <div class="owners-row">
-        <figure>
-          <img src="/img/calportalJoss.svg" alt={t.aboutModal.names[0]} />
+    <div class="chip-panel chip-panel--float" id="panel-about">
+      <h3 class="visually-hidden">{t.aboutModal.title}</h3>
+      <p class="visually-hidden">{t.aboutModal.text}</p>
+      <div class="owners-cluster">
+        <figure class="owner owner--a">
           <figcaption>{t.aboutModal.names[0]}</figcaption>
+          <img src="/img/calportalJoss.svg" alt="" />
         </figure>
-        <figure>
-          <img src="/img/calportalMiq.svg" alt={t.aboutModal.names[1]} />
+        <figure class="owner owner--b">
+          <img src="/img/calportalMiq.svg" alt="" />
           <figcaption>{t.aboutModal.names[1]}</figcaption>
         </figure>
       </div>
@@ -129,7 +129,7 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
     // dividing line sits (e.g. the language list's vertical rule). When
     // present, we line that mark up with the start of the trigger word
     // instead of just centering the whole panel under it.
-    const anchorEl = panel.querySelector<HTMLElement>('.lang-list') || panel;
+    const anchorEl = panel.querySelector<HTMLElement>('.lang-list, .owners-cluster') || panel;
     const anchorOffsetRaw = getComputedStyle(anchorEl).getPropertyValue('--panel-anchor-offset');
     const anchorOffset = anchorOffsetRaw ? parseFloat(anchorOffsetRaw) : NaN;
 
