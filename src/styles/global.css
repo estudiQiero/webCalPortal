@@ -16,6 +16,7 @@
   --coure-hover: rgba(79, 42, 21, 0.09);
   --coure-soft: #7a4a2c;
   --verd-camp: #6b7a4f;
+  --roig-subratllat: #b3312c;
   --font-principal: 'Arno', Georgia, 'Times New Roman', serif;
   --header-h: 82px;
   --max-width: 1180px;
@@ -91,6 +92,7 @@ p {
    changes the element's actual box, so the browser reflows the words
    around it instead of just painting an overlap on top of them. */
 .word-trigger {
+  position: relative;
   display: inline-block;
   cursor: pointer;
   color: inherit;
@@ -107,6 +109,26 @@ p {
   outline: 2px solid var(--coure-soft);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* Small red underline that draws itself left-to-right on hover/focus. */
+.word-trigger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.06em;
+  height: 3px;
+  background: var(--roig-subratllat);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s ease;
+}
+
+.word-trigger:hover::after,
+.word-trigger:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .visually-hidden {
@@ -418,17 +440,29 @@ p {
    title or re-centers the rest of the hero content. No fill at all —
    it reads as lines and text floating over the hero, like the
    original site — and it never covers the trigger word itself. */
-.chip-panel--float {
+.chip-panel--float,
+.chip-panel--anchored {
   position: absolute;
   top: 0;
   left: 0;
+  margin: 0;
+}
+
+.chip-panel--float {
   max-width: min(88vw, 20em);
   width: max-content;
-  margin: 0;
   padding: 0;
   background: transparent;
   border: none;
   box-shadow: none;
+}
+
+/* Same JS-computed centering as --float (see positionFloatingPanel in
+   Hero.astro), but keeps the normal chip-panel look (background, border,
+   padding) — for panels with heavier content, like the map, that need a
+   readable surface behind them rather than floating over the hero art. */
+.chip-panel--anchored {
+  width: min(92vw, 30em);
 }
 
 
@@ -520,8 +554,9 @@ p {
    a solid brown vertical divider between them, crossed by a brown
    horizontal line under the last row; both bleed slightly past the
    list's own edges rather than stopping exactly at the text.
-   --panel-anchor-offset marks where the divider sits, in px, so the
-   script in Hero.astro can line it up with the trigger word. */
+   --panel-anchor-offset is a purely internal layout value (where the
+   divider sits, in px) — the panel itself is centered on the trigger
+   word by the script in Hero.astro, regardless of this value. */
 .lang-list {
   --panel-anchor-offset: 64px;
   position: relative;

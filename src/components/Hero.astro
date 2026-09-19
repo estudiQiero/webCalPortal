@@ -61,7 +61,7 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
       </div>
     </div>
 
-    <div class="chip-panel" id="panel-location">
+    <div class="chip-panel chip-panel--anchored" id="panel-location">
       <h3>{t.location.title}</h3>
       <p>{t.location.text}</p>
       <div class="location-map">
@@ -125,19 +125,10 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
     const triggerRect = trigger.getBoundingClientRect();
     const gap = 14;
 
-    // Some panels mark, via --panel-anchor-offset, where their own
-    // dividing line sits (e.g. the language list's vertical rule). When
-    // present, we line that mark up with the start of the trigger word
-    // instead of just centering the whole panel under it.
-    const anchorEl = panel.querySelector<HTMLElement>('.lang-list, .owners-cluster') || panel;
-    const anchorOffsetRaw = getComputedStyle(anchorEl).getPropertyValue('--panel-anchor-offset');
-    const anchorOffset = anchorOffsetRaw ? parseFloat(anchorOffsetRaw) : NaN;
-
-    // All of this is done in viewport coordinates first, then converted
-    // to hero-relative coordinates at the end.
-    let leftVp = Number.isFinite(anchorOffset)
-      ? triggerRect.left - anchorOffset
-      : triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
+    // Always centered on the trigger word itself (in viewport coordinates
+    // first, then converted to hero-relative coordinates below), clamped
+    // so it never runs off either edge of the viewport.
+    let leftVp = triggerRect.left + triggerRect.width / 2 - panelRect.width / 2;
     leftVp = Math.max(8, Math.min(leftVp, window.innerWidth - panelRect.width - 8));
 
     // Always above the word, by at least `gap`. On an unusually short
@@ -158,7 +149,7 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
       closeAllPanels();
       if (isOpen) return;
 
-      if (panel.classList.contains('chip-panel--float')) {
+      if (panel.classList.contains('chip-panel--float') || panel.classList.contains('chip-panel--anchored')) {
         positionFloatingPanel(trigger, panel);
         const reposition = () => positionFloatingPanel(trigger, panel);
         openFloatHandlers = { reposition };
