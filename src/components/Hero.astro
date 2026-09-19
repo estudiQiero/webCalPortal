@@ -64,13 +64,14 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
     <div class="chip-panel chip-panel--anchored" id="panel-location">
       <h3>{t.location.title}</h3>
       <p>{t.location.text}</p>
-      <div class="location-map">
-        <iframe
-          title="Cal Portal — Torrefeta i Florejacs"
-          src="https://www.openstreetmap.org/export/embed.html?bbox=1.1372%2C41.6989%2C1.1672%2C41.7189&layer=mapnik&marker=41.7089%2C1.1522"
-          loading="lazy"
-        ></iframe>
-      </div>
+      <dl class="location-stats">
+        {t.location.stats.map((stat) => (
+          <div class="stat-row">
+            <dt>{stat.label}</dt>
+            <dd>{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
       <a class="location-link" href="https://www.google.com/maps?q=41.7089,1.1522" target="_blank" rel="noopener">
         {t.location.openInMaps} →
       </a>
