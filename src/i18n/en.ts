@@ -41,7 +41,7 @@ const en: typeof ca = {
     stats: [
       { label: 'Coordinates', value: '41.75408° N, 1.27468° E', href: 'https://www.google.com/maps?q=41.754077,1.274676' },
       { label: 'Elevation', value: '475 m' },
-      { label: 'Population', value: '589 (2025)' },
+      { label: 'Population (village)', value: '61 (2025)' },
       { label: 'Area', value: '88.9 km²' },
       { label: 'Comarca', value: 'La Segarra' },
     ],

@@ -39,7 +39,7 @@ export default {
     stats: [
       { label: 'Coordenades', value: '41,75408° N, 1,27468° E', href: 'https://www.google.com/maps?q=41.754077,1.274676' },
       { label: 'Altitud', value: '475 m' },
-      { label: 'Població', value: '589 hab. (2025)' },
+      { label: 'Població (poble)', value: '61 hab. (2025)' },
       { label: 'Superfície', value: '88,9 km²' },
       { label: 'Comarca', value: 'La Segarra' },
     ],
