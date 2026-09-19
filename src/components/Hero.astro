@@ -68,11 +68,17 @@ const langAbbrev: Record<string, string> = { ca: 'CAT', es: 'ESP', fr: 'FRA', en
         {t.location.stats.map((stat) => (
           <div class="stat-row">
             <dt>{stat.label}</dt>
-            <dd>{stat.value}</dd>
+            <dd>
+              {'href' in stat && stat.href ? (
+                <a href={stat.href} target="_blank" rel="noopener">{stat.value}</a>
+              ) : (
+                stat.value
+              )}
+            </dd>
           </div>
         ))}
       </dl>
-      <a class="location-link" href="https://www.google.com/maps?q=41.7089,1.1522" target="_blank" rel="noopener">
+      <a class="location-link" href="https://www.google.com/maps?q=41.754077,1.274676" target="_blank" rel="noopener">
         {t.location.openInMaps} →
       </a>
     </div>

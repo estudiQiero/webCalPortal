@@ -670,6 +670,19 @@ p {
   white-space: nowrap;
 }
 
+/* The coordinates row links out to Google Maps too — underlined so it
+   reads as clickable instead of looking identical to the plain stats. */
+.location-stats dd a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transition);
+}
+
+.location-stats dd a:hover,
+.location-stats dd a:focus-visible {
+  color: var(--coure-soft);
+}
+
 .location-link {
   display: inline-block;
   margin-top: 0.6rem;

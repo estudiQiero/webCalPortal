@@ -39,7 +39,7 @@ const en: typeof ca = {
     title: 'Where we are',
     text: 'Torrefeta i Florejacs, in the heart of La Segarra, Lleida — open fields and Florejacs Castle a few minutes’ walk away.',
     stats: [
-      { label: 'Coordinates', value: '41.7089° N, 1.1522° E' },
+      { label: 'Coordinates', value: '41.75408° N, 1.27468° E', href: 'https://www.google.com/maps?q=41.754077,1.274676' },
       { label: 'Elevation', value: '475 m' },
       { label: 'Population', value: '589 (2025)' },
       { label: 'Area', value: '88.9 km²' },

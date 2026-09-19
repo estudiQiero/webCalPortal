@@ -37,7 +37,7 @@ export default {
     title: 'On som',
     text: 'Torrefeta i Florejacs, al cor de la Segarra, Lleida — camps oberts i el castell de Florejacs a pocs minuts a peu.',
     stats: [
-      { label: 'Coordenades', value: '41,7089° N, 1,1522° E' },
+      { label: 'Coordenades', value: '41,75408° N, 1,27468° E', href: 'https://www.google.com/maps?q=41.754077,1.274676' },
       { label: 'Altitud', value: '475 m' },
       { label: 'Població', value: '589 hab. (2025)' },
       { label: 'Superfície', value: '88,9 km²' },
